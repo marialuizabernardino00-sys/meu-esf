@@ -1,23 +1,6 @@
 <!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Meu ESF</title>
-</head>
-<body>
-<script>
-(async()=>{
-  try{
-    const r=await fetch('./Meu_ESF_Automatizado_corrigido_v2-3.html',{cache:'no-store'});
-    if(!r.ok) throw new Error('Não foi possível carregar o aplicativo.');
-    let h=await r.text();
-    const old=/async function saveOrUpdatePatientFromForm\(u\)\{.*?\}\nasync function logHistory/s;
-    const replacement=`async function saveOrUpdatePatientFromForm(u){const name=document.getElementById('f_name').value.trim(),ipm=document.getElementById('f_ipm').value.trim();if(!name||!ipm)throw new Error('Nome e IPM são obrigatórios.');const payload={name,ipm,birth_date:document.getElementById('f_birth').value||null,acs_name:document.getElementById('f_acs').value.trim()||null};let p=cache.patients.find(x=>x.ipm===ipm&&x.user_id===u);if(!p){const r=await db.from('patients').select('*').eq('user_id',u).eq('ipm',ipm).maybeSingle();if(r.error)throw r.error;p=r.data||null}if(p){p=await safe(db.from('patients').update(payload).eq('id',p.id).eq('user_id',u).select().single(),'atualizar paciente')}else{p=await safe(db.from('patients').insert({...payload,user_id:u}).select().single(),'cadastrar paciente')}return p}\nasync function logHistory`;
-    if(old.test(h)) h=h.replace(old,replacement);
-    document.open();document.write(h);document.close();
-  }catch(e){document.body.innerHTML='<p style="font-family:system-ui;padding:24px">Não foi possível carregar o Meu ESF. '+(e.message||'Tente novamente.')+'</p>';console.error(e)}
-})();
-</script>
-</body>
-</html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Meu ESF</title></head><body><script>
+(async()=>{try{const r=await fetch('./Meu_ESF_Automatizado_corrigido_v2-3.html',{cache:'no-store'});if(!r.ok)throw new Error('Não foi possível carregar o aplicativo.');let h=await r.text();
+const a=/async function saveOrUpdatePatientFromForm\(u\)\{.*?\}\nasync function logHistory/s;const b=`async function saveOrUpdatePatientFromForm(u){const name=document.getElementById('f_name').value.trim(),ipm=document.getElementById('f_ipm').value.trim();if(!name||!ipm)throw new Error('Nome e IPM são obrigatórios.');const payload={name,ipm,birth_date:document.getElementById('f_birth').value||null,acs_name:document.getElementById('f_acs').value.trim()||null};let p=cache.patients.find(x=>x.ipm===ipm&&x.user_id===u);if(!p){const r=await db.from('patients').select('*').eq('user_id',u).eq('ipm',ipm).maybeSingle();if(r.error)throw r.error;p=r.data||null}if(p){p=await safe(db.from('patients').update(payload).eq('id',p.id).eq('user_id',u).select().single(),'atualizar paciente')}else{p=await safe(db.from('patients').insert({...payload,user_id:u}).select().single(),'cadastrar paciente')}return p}\nasync function logHistory`;if(a.test(h))h=h.replace(a,b);
+const c=/if\(t==='pregnancy'\)\{.*?\n\s*\}\n\s*if\(t==='child'\)/s;const d=`if(t==='pregnancy'){const dum=document.getElementById('f_dum').value;if(!dum)throw new Error('DUM é obrigatória.');const usg=document.getElementById('f_usg').value,uw=+document.getElementById('f_uw').value||0,ud=+document.getElementById('f_ud').value||0;const x={user_id:u,patient_id:p.id,name:p.name,ipm_code:p.ipm,dum,dpp:dppFromDum(dum),ultrasound_date:usg||null,ultrasound_gestational_weeks:usg?uw:null,ultrasound_gestational_days:usg?ud:null,dpp_ultrasound:usg?dppFromUsg(usg,uw,ud):null,risk_classification:document.getElementById('f_risk').value,first_consultation_date:document.getElementById('f_first').value||null,next_consultation_date:nextPrenatal(today(),dum),active:true};const e=await safe(db.from('pregnancies').select('*').eq('patient_id',p.id).maybeSingle(),'buscar gestante existente');if(e)await safe(db.from('pregnancies').update(x).eq('patient_id',p.id).select().single(),'atualizar gestante');else await safe(db.from('pregnancies').insert(x).select().single(),'salvar gestante');await logHistory(p.id,'Gestante cadastrada/atualizada')}\nif(t==='child')`;if(c.test(h))h=h.replace(c,d);document.open();document.write(h);document.close()}catch(e){document.body.innerHTML='<p style="font-family:system-ui;padding:24px">Não foi possível carregar o Meu ESF. '+(e.message||'Tente novamente.')+'</p>';console.error(e)}})();
+</script></body></html>
